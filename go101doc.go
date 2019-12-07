@@ -51,7 +51,7 @@ func (doc *docMaker) gzipWrite(path []byte, out chan<- struct{}, lock *sync.Mute
 	comp := gzip.NewWriter(&doc.buf)
 	comp.Write(path)
 	comp.Write(resp)
-	comp.Write([]byte("|||"))
+	comp.Write([]byte("|+|"))
 	comp.Close()
 	lock.Unlock()
 	out <- struct{}{}
@@ -71,7 +71,6 @@ func (doc *docMaker) getBookData() {
 func (doc *docMaker) getDecompBuffer() []byte {
 	readComp, _ := gzip.NewReader(&doc.buf)
 	out, _ := ioutil.ReadAll(readComp)
-	fmt.Printf("%q\n", out)
 	return out
 }
 
@@ -88,9 +87,7 @@ func main() {
 	}
 	goDOC.setLinks(foundLinks)
 	goDOC.getBookData()
-	fmt.Printf("%q\n", goDOC.getDecompBuffer())
-	//bookData := goDOC.getDecompBuffer()
-	//x := bytes.Split(bookData, []byte(" "))
-	//fmt.Printf("%v\n", x)
-	//fmt.Printf("LENGTH: %d\n", len(x))
+	bookData := bytes.Split(goDOC.getDecompBuffer(), []byte("|+|"))
+	fmt.Printf("%q\n", bookData)
+	fmt.Printf("LENGTH: %d\n", len(bookData))
 }
