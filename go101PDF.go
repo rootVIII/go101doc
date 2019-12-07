@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -35,7 +36,6 @@ func (doc docMaker) pageRequest(endpoint string) []byte {
 		fmt.Printf("request failed: %s\n", doc.baseURL)
 		os.Exit(1)
 	}
-	//fmt.Printf("%v\n", req)
 	rText, _ := ioutil.ReadAll(response.Body)
 	return rText
 }
@@ -57,6 +57,8 @@ func (doc *docMaker) getBookData() {
 }
 
 func (doc *docMaker) getBufferStr() []byte {
+	readComp, _ := gzip.NewReader(&doc.buf)
+	io.Copy(os.Stdout, readComp)
 	return doc.buf.Bytes()
 }
 
@@ -74,4 +76,5 @@ func main() {
 	goDOC.setLinks(foundLinks)
 	goDOC.getBookData()
 	fmt.Printf("%q\n", goDOC.getBufferStr())
+	//output := goDOC.getBufferStr()
 }
