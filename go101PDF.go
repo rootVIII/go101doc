@@ -19,6 +19,7 @@ type GoDOC interface {
 	setLinks(bookLinks [][]byte)
 	getBookData()
 	getDecompBuffer() []byte
+	gzipWrite(path []byte, out chan<- struct{})
 }
 
 type docMaker struct {
@@ -44,15 +45,24 @@ func (doc *docMaker) setLinks(bookLinks [][]byte) {
 	doc.links = bookLinks
 }
 
+func (doc *docMaker) gzipWrite(path []byte, out chan<- struct{}) {
+	resp := doc.pageRequest(string(path))
+	comp := gzip.NewWriter(&doc.buf)
+	comp.Write(path)
+	comp.Write([]byte("|"))
+	comp.Write(resp)
+	comp.Write([]byte("|"))
+	comp.Close()
+	out <- struct{}{}
+}
+
 func (doc *docMaker) getBookData() {
+	ch := make(chan struct{})
 	for _, urlPath := range doc.links {
-		resp := doc.pageRequest(string(urlPath))
-		comp := gzip.NewWriter(&doc.buf)
-		comp.Write(urlPath)
-		comp.Write([]byte("|"))
-		comp.Write(resp)
-		comp.Write([]byte("|"))
-		comp.Close()
+		go doc.gzipWrite(urlPath, ch)
+	}
+	for i := 0; i < len(doc.links); i++ {
+		<-ch
 	}
 }
 
@@ -76,5 +86,4 @@ func main() {
 	goDOC.setLinks(foundLinks)
 	goDOC.getBookData()
 	fmt.Printf("%q\n", goDOC.getDecompBuffer())
-	//output := goDOC.getBufferStr()
 }
