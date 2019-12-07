@@ -1,6 +1,6 @@
 package main
 
-// go101PDF.go
+// go101doc.go
 // rootVIII
 
 import (
@@ -12,27 +12,27 @@ import (
 	"os"
 )
 
-// GoPDF -Build a go101 PDF in the current directory.
-type GoPDF interface {
+// GoDOC -Build a Go 101 ebook in the current directory.
+type GoDOC interface {
 	pageRequest(url string) []byte
 	setLinks(bookLinks [][]byte)
 	getBookData()
-	getBufferStr() string
+	getBufferStr() []byte
 }
 
-type pdfMaker struct {
-	GoPDF
+type docMaker struct {
+	GoDOC
 	baseURL string
 	links   [][]byte
 	buf     bytes.Buffer
 }
 
-func (pdf pdfMaker) pageRequest(endpoint string) []byte {
+func (doc docMaker) pageRequest(endpoint string) []byte {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", pdf.baseURL+endpoint, nil)
+	req, err := http.NewRequest("GET", doc.baseURL+endpoint, nil)
 	response, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("request failed: %s\n", pdf.baseURL)
+		fmt.Printf("request failed: %s\n", doc.baseURL)
 		os.Exit(1)
 	}
 	//fmt.Printf("%v\n", req)
@@ -40,14 +40,14 @@ func (pdf pdfMaker) pageRequest(endpoint string) []byte {
 	return rText
 }
 
-func (pdf *pdfMaker) setLinks(bookLinks [][]byte) {
-	pdf.links = bookLinks
+func (doc *docMaker) setLinks(bookLinks [][]byte) {
+	doc.links = bookLinks
 }
 
-func (pdf *pdfMaker) getBookData() {
-	for _, urlPath := range pdf.links {
-		resp := pdf.pageRequest(string(urlPath))
-		comp := gzip.NewWriter(&pdf.buf)
+func (doc *docMaker) getBookData() {
+	for _, urlPath := range doc.links {
+		resp := doc.pageRequest(string(urlPath))
+		comp := gzip.NewWriter(&doc.buf)
 		comp.Write(urlPath)
 		comp.Write([]byte("|"))
 		comp.Write(resp)
@@ -56,14 +56,14 @@ func (pdf *pdfMaker) getBookData() {
 	}
 }
 
-func (pdf *pdfMaker) getBufferStr() string {
-	return pdf.buf.String()
+func (doc *docMaker) getBufferStr() []byte {
+	return doc.buf.Bytes()
 }
 
 func main() {
-	var goPDF GoPDF
-	goPDF = &pdfMaker{baseURL: "https://go101.org/article/"}
-	mainPage := goPDF.pageRequest("101.html")
+	var goDOC GoDOC
+	goDOC = &docMaker{baseURL: "https://go101.org/article/"}
+	mainPage := goDOC.pageRequest("101.html")
 	foundLinks := make([][]byte, 0)
 	for _, line := range bytes.Split(mainPage, []byte("\n")) {
 		if bytes.Contains(line, []byte("<li")) && bytes.Contains(line, []byte("index")) {
@@ -71,7 +71,7 @@ func main() {
 			foundLinks = append(foundLinks, link)
 		}
 	}
-	goPDF.setLinks(foundLinks)
-	goPDF.getBookData()
-	fmt.Println(goPDF.getBufferStr())
+	goDOC.setLinks(foundLinks)
+	goDOC.getBookData()
+	fmt.Printf("%q\n", goDOC.getBufferStr())
 }
