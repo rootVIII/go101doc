@@ -18,7 +18,7 @@ type GoDOC interface {
 	pageRequest(url string) []byte
 	setLinks(bookLinks [][]byte)
 	getBookData()
-	getBufferStr() []byte
+	getDecompBuffer() []byte
 }
 
 type docMaker struct {
@@ -56,7 +56,7 @@ func (doc *docMaker) getBookData() {
 	}
 }
 
-func (doc *docMaker) getBufferStr() []byte {
+func (doc *docMaker) getDecompBuffer() []byte {
 	readComp, _ := gzip.NewReader(&doc.buf)
 	io.Copy(os.Stdout, readComp)
 	return doc.buf.Bytes()
@@ -75,6 +75,6 @@ func main() {
 	}
 	goDOC.setLinks(foundLinks)
 	goDOC.getBookData()
-	fmt.Printf("%q\n", goDOC.getBufferStr())
+	fmt.Printf("%q\n", goDOC.getDecompBuffer())
 	//output := goDOC.getBufferStr()
 }
