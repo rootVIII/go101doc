@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"sync"
 )
 
 // GoDOC -Build a Go 101 ebook in the current directory.
@@ -19,7 +20,7 @@ type GoDOC interface {
 	setLinks(bookLinks [][]byte)
 	getBookData()
 	getDecompBuffer() []byte
-	gzipWrite(path []byte, out chan<- struct{})
+	gzipWrite(path []byte, out chan<- struct{}, lock *sync.Mutex)
 }
 
 type docMaker struct {
@@ -45,21 +46,24 @@ func (doc *docMaker) setLinks(bookLinks [][]byte) {
 	doc.links = bookLinks
 }
 
-func (doc *docMaker) gzipWrite(path []byte, out chan<- struct{}) {
+func (doc *docMaker) gzipWrite(path []byte, out chan<- struct{}, lock *sync.Mutex) {
 	resp := doc.pageRequest(string(path))
+	lock.Lock()
 	comp := gzip.NewWriter(&doc.buf)
 	comp.Write(path)
 	comp.Write([]byte("|"))
 	comp.Write(resp)
 	comp.Write([]byte("|"))
 	comp.Close()
+	lock.Unlock()
 	out <- struct{}{}
 }
 
 func (doc *docMaker) getBookData() {
 	ch := make(chan struct{})
+	var mutex = &sync.Mutex{}
 	for _, urlPath := range doc.links {
-		go doc.gzipWrite(urlPath, ch)
+		go doc.gzipWrite(urlPath, ch, mutex)
 	}
 	for i := 0; i < len(doc.links); i++ {
 		<-ch
