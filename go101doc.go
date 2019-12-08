@@ -99,8 +99,9 @@ func main() {
 	goDOC.setLinks(foundLinks)
 	goDOC.getBookData()
 	bookData := bytes.Split(goDOC.getDecompBuffer(), []byte("|+|"))
-	// dir, err := os.Getwd()
-	f, err := os.OpenFile("out.html", os.O_APPEND|os.O_WRONLY, 0644)
+	cwd, _ := os.Getwd()
+	path := cwd + string(os.PathSeparator) + "go101.html"
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
@@ -113,13 +114,9 @@ func main() {
 				continue
 			} else {
 				page := html.UnescapeString(string(pageData[len(pageName):len(pageData)]))
-				//fmt.Printf("%s\n", page)
-				//fmt.Printf("FOUND: %q\n", pageName)
-
 				f.WriteString(page)
-
 			}
 		}
-
 	}
+	fmt.Printf("File created:  %s\n", path)
 }
