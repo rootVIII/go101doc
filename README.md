@@ -6,7 +6,8 @@
 <pre>
   <code>
 go get -v github.com/rootVIII/go101doc
- 
+go install github.com/rootVIII/go101doc
+go101doc
   </code>
 </pre>
 
