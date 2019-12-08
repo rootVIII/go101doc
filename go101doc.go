@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
+	"html"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -17,6 +18,7 @@ import (
 type GoDOC interface {
 	pageRequest(url string) []byte
 	setLinks(bookLinks [][]byte)
+	getLinks() [][]byte
 	getBookData()
 	getDecompBuffer() []byte
 	gzipWrite(path []byte, out chan<- struct{}, lock *sync.Mutex)
@@ -43,6 +45,10 @@ func (doc docMaker) pageRequest(endpoint string) []byte {
 
 func (doc *docMaker) setLinks(bookLinks [][]byte) {
 	doc.links = bookLinks
+}
+
+func (doc *docMaker) getLinks() [][]byte {
+	return doc.links
 }
 
 func (doc *docMaker) gzipWrite(path []byte, out chan<- struct{}, lock *sync.Mutex) {
@@ -88,6 +94,20 @@ func main() {
 	goDOC.setLinks(foundLinks)
 	goDOC.getBookData()
 	bookData := bytes.Split(goDOC.getDecompBuffer(), []byte("|+|"))
-	fmt.Printf("%q\n", bookData)
-	fmt.Printf("LENGTH: %d\n", len(bookData))
+	//fmt.Printf("%q\n", bookData)
+	//fmt.Printf("LENGTH: %d\n", len(bookData))
+	for _, pageName := range goDOC.getLinks() {
+		//fmt.Printf("%q\n\n", pageName)
+		for _, pageData := range bookData {
+			current := pageData[:len(pageName)]
+			if bytes.Compare(pageName, current) != 0 {
+				continue
+			} else {
+				page := html.UnescapeString(string(pageData[len(pageName) : len(pageData)-1]))
+				fmt.Printf("%s\n", page)
+				fmt.Printf("FOUND: %q\n", pageName)
+			}
+		}
+
+	}
 }
