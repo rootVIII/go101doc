@@ -16,4 +16,4 @@ go101doc
 <hr>
 This was developed on Ubuntu 18.04 LTS.
 <hr>
-<b>Author: rootVIII 28SEP2019</b><br>
+<b>Author: rootVIII 08DEC2019</b><br>
