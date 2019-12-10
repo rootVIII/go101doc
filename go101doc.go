@@ -53,11 +53,19 @@ func (doc *docMaker) getLinks() [][]byte {
 
 func (doc *docMaker) gzipWrite(path []byte, out chan<- struct{}, lock *sync.Mutex) {
 	resp := doc.pageRequest(string(path))
-
+	var respMinusFooter []byte
+	for i := range resp {
+		if resp[i+1] == byte('h') && resp[i+2] == byte('r') && resp[i+3] == byte('>') {
+			break
+		} else {
+			respMinusFooter = append(respMinusFooter, resp[i])
+		}
+	}
 	lock.Lock()
 	comp := gzip.NewWriter(&doc.buf)
 	comp.Write(path)
-	comp.Write(resp)
+	comp.Write(respMinusFooter)
+	comp.Write([]byte("</div></body></html>"))
 	comp.Write([]byte("|+|"))
 	comp.Close()
 	lock.Unlock()
