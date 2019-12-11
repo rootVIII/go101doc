@@ -89,10 +89,6 @@ func (doc *docMaker) getDecompBuffer() []byte {
 	return out
 }
 
-type error interface {
-	Error() string
-}
-
 func main() {
 	var goDOC GoDOC
 	goDOC = &docMaker{baseURL: "https://go101.org/article/"}
@@ -111,7 +107,7 @@ func main() {
 	path := cwd + string(os.PathSeparator) + "go101.html"
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println(err)
 		os.Exit(1)
 	}
 	defer f.Close()
