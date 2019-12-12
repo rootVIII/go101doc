@@ -116,10 +116,9 @@ func main() {
 			current := pageData[:len(pageName)]
 			if bytes.Compare(pageName, current) != 0 {
 				continue
-			} else {
-				page := html.UnescapeString(string(pageData[len(pageName):len(pageData)]))
-				f.WriteString(page)
 			}
+			page := html.UnescapeString(string(pageData[len(pageName):len(pageData)]))
+			f.WriteString(page)
 		}
 	}
 	fmt.Printf("File created:  %s\n", path)
