@@ -142,7 +142,8 @@ func main() {
 		exitOnError(err)
 	}
 
-	path := cwd + string(os.PathSeparator) + "go101.html"
+	path := fmt.Sprintf("%s%s%s", cwd, string(os.PathSeparator), "go101.html")
+
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		exitOnError(err)
