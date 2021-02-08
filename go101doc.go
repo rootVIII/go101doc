@@ -108,7 +108,8 @@ func (doc *go101Doc) getDecompBuffer() ([]byte, error) {
 }
 
 func exitOnError(err error) {
-
+	fmt.Printf("%v\n", err)
+	os.Exit(1)
 }
 
 func main() {
