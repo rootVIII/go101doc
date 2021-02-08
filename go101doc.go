@@ -1,7 +1,9 @@
 package main
 
+/*
 // go101doc.go
 // rootVIII
+*/
 
 import (
 	"bytes"
