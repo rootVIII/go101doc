@@ -1,8 +1,8 @@
 package main
 
 /*
-// go101doc.go
-// rootVIII
+	go101doc.go
+	rootVIII
 */
 
 import (
