@@ -22,6 +22,6 @@ go101doc
 
 
 <hr>
-This was developed on Ubuntu 18.04 LTS.
+This was developed on Ubuntu 18.04 LTS + MacOS Big Sur.
 <hr>
 <b>Author: rootVIII 08DEC2019</b><br>
