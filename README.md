@@ -14,6 +14,9 @@ go build -o bin/go101doc
 # Build binary in ~/go/bin (available in path)
 cd &lt;project root&gt;
 go install .
+
+# Run
+go101doc
   </code>
 </pre>
 
