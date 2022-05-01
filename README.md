@@ -5,9 +5,15 @@
 
 <pre>
   <code>
-go get -v github.com/rootVIII/go101doc
-go install github.com/rootVIII/go101doc
-go101doc
+# Clone repository:
+git clone https://github.com/rootVIII/go101doc.git
+
+# Build:
+go build -o bin/go101doc
+
+# Build binary in ~/go/bin (available in path)
+cd &lt;project root&gt;
+go install .
   </code>
 </pre>
 
