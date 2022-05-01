@@ -8,7 +8,7 @@
 # Clone repository:
 git clone https://github.com/rootVIII/go101doc.git
 
-# Build:
+# Build and run:
 go build -o bin/go101doc
 ./bin/go101doc 
 
