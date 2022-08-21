@@ -32,7 +32,7 @@ type go101Doc struct {
 	buf     bytes.Buffer
 }
 
-func (doc go101Doc) pageRequest(endpoint string) ([]byte, error) {
+func (doc *go101Doc) pageRequest(endpoint string) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", doc.baseURL+endpoint, nil)
 	if err != nil {
