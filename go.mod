@@ -1,3 +1,3 @@
-module go101doc
+module github.com/rootVIII/go101doc
 
-go 1.18
+go 1.19
