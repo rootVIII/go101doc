@@ -10,6 +10,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"html"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -42,7 +43,7 @@ func (doc *go101Doc) pageRequest(endpoint string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	rBytes, err := ioutil.ReadAll(response.Body)
+	rBytes, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
